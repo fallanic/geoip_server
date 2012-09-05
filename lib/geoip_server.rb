@@ -45,8 +45,21 @@ get '/:ip' do
 
   return "{}" unless data
 
-  ActiveSupport::JSON.encode(encode(data))
-
+  json = ActiveSupport::JSON.encode(encode(data))
+  
+  #jsonp support
+  callback, variable = params[:callback], params[:variable]
+  begin
+    if callback && variable
+      "var #{variable} = #{json};\n#{callback}(#{variable});"
+    elsif variable
+      "var #{variable} = #{json};"
+    elsif callback
+      "#{callback}(#{json});"
+    else
+      json
+    end
+  end
 end
 
 def encode data

@@ -38,6 +38,24 @@ class GeoipServerTest < Test::Unit::TestCase
     end
   end
 
+  context "on GET to /:ip?callback=myCallbackFunction" do
+    setup {
+      get '/67.161.92.71?callback=myCallbackFunction'
+    }
+    should "return ok" do
+      assert last_response.ok?
+    end
+    should "return json content-type" do
+      assert_equal 'application/json;charset=ascii-8bit', last_response.headers['Content-Type']
+    end
+    should "have a function as result" do
+      require 'ruby-debug'
+      debugger
+      assert last_response.body.start_with?("myCallbackFunction(")
+      assert last_response.body.end_with?(");")
+    end
+  end
+
   context "converting array" do
     setup {
       array = [
