@@ -46,4 +46,16 @@ namespace :geoip do
   task :vendor do
     %x{mkdir -p vendor}
   end
+  
+  desc "just wake up the heroku dyno"
+  task :wakeup do
+    require 'net/http'
+
+    url = URI.parse('http://foodtree-geoip-server.herokuapp.com/24.84.100.52')
+    req = Net::HTTP::Get.new(url.path)
+    res = Net::HTTP.start(url.host, url.port) {|http|
+      http.request(req)
+    }
+    puts res.body
+  end
 end
