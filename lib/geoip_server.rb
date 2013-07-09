@@ -38,7 +38,11 @@ end
 get '/:ip' do
   pass unless params[:ip] =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/
 
-  data = GeoIP.new(data_file).city(params[:ip])
+  get_info(params[:ip])
+end
+
+def get_info(ip)
+  data = GeoIP.new(data_file).city(ip)
 
   content_type 'application/json;charset=ascii-8bit'
   headers['Cache-Control'] = "public; max-age=#{365*24*60*60}"
@@ -50,16 +54,21 @@ get '/:ip' do
   #jsonp support
   callback, variable = params[:callback], params[:variable]
   begin
+    result = json
     if callback && variable
-      "var #{variable} = #{json};\n#{callback}(#{variable});"
+      result = "var #{variable} = #{json};\n#{callback}(#{variable});"
     elsif variable
-      "var #{variable} = #{json};"
+      result = "var #{variable} = #{json};"
     elsif callback
-      "#{callback}(#{json});"
-    else
-      json
+      result = "#{callback}(#{json});"
     end
+    return result
   end
+end
+
+get '/my' do
+  puts 'user ip is #{request.ip}'
+  get_info(request.ip)
 end
 
 def encode data
