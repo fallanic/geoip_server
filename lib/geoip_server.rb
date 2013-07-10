@@ -38,10 +38,10 @@ end
 get '/:ip' do
   pass unless params[:ip] =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/
 
-  get_info(params[:ip])
+  get_info(params[:ip], data_file)
 end
 
-def get_info(ip)
+def self.get_info(ip,data_file)
   data = GeoIP.new(data_file).city(ip)
 
   content_type 'application/json;charset=ascii-8bit'
@@ -68,7 +68,7 @@ end
 
 get '/my' do
   puts 'user ip is #{request.ip}'
-  get_info(request.ip)
+  get_info(request.ip,data_file)
 end
 
 def encode data
