@@ -41,7 +41,7 @@ get '/:ip' do
   get_info(params[:ip], data_file)
 end
 
-def self.get_info(ip,data_file)
+def get_info(ip,data_file)
   data = GeoIP.new(data_file).city(ip)
 
   content_type 'application/json;charset=ascii-8bit'
